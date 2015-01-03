@@ -33,6 +33,8 @@ Contribute
 Support
 -------
 
+- Docs: https://github.com/languagengine/Language-Engine-Docs
+
 If you are having issues or questions, or want to learn more, get in touch.
 We're @languagengine on Twitter, and #languagengine on IRC.
 
