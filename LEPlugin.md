@@ -98,7 +98,7 @@ to the new word. Again, with `sgf == @"file"`, the example meaning would be
 
     \(x : Entity) -> (s : Event) * AutoEven_File s * Exp s x
 
-
+.
 
     - (BOOL)addMassNoun:(NSString*)ms semantics:(NSString*)sem;
 
