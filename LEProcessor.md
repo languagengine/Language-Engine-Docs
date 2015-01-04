@@ -57,27 +57,3 @@ Calling `processInput:` will result in the input being processed (parsed, conver
     - (LEProcessorCode)eventSetForInput:(NSString*)input output:(LEEventSet*)output;
 
 If the host app wants to handle events differently manually, rather than automatically dispatching the foreground events, it can use `eventSetForInput:`, which will have the same effect as `processInput:`, except for the dispatching to plugins.
-
-World Models
-------------
-
-    - (void)setShouldRefreshWorldModel;
-
-Called by plugins when they perform actions that change the world in ways not manifestly present in the sentences being processed. For example, moving to a new directory reveals new, previously unknown files, and would require a refresh of the world model.
-
-    - (LEEventSet*)worldModelDescription;
-
-Used for querying what the processor knows about the world. The world model description is updated to include new knowledge from the input sentences prior to any events being dispatched. Therefore, by the time plugins receive dispatches, the world model represents the way the world "ought to look" as a result of dispatching.
-
-    - (LEEntity*)newEntity;
-
-Create a new entity by updating the world model. This should always be used to create new entities.
-
-    - (BOOL)assertEventPredicate:(NSString*)prd arguments:(NSDictionary*)args sender:(LEPlugin*)plg;
-
-Inform the processor that some new event exists, of the sort classified by `prd`, relating the specified arguments. For example, when analyzing the world, a filesystem plugin might want to inform the processor of a file that exists. This could be done like so, assuming the entity `x` has already been created:
-
-    [processor assertEventPredicate: @"File"
-                          arguments: @{ @"Exp": [x] }];
-
-This method automatically creates a new event object in the world model.

@@ -9,7 +9,7 @@ An `LEPlugin` handles all of the domain-specific knowledge that Language Engine 
 
 `LEPlugin` itself is an abstract class. Concrete instances implement different functionality. When an instance is added to a processor, its `setup` method is called, which builds all of the custom knowledge into a form the processor can use. 
 
-The plugins analyze the world when the processor needs to refresh the world model. This means inspecting the world and then informing the processor of what the plugin "sees". 
+The plugins analyze the world when the processor needs to refresh the world model. This means inspecting the world and then informing the processor of what the plugin "sees". Informing is done via the plugins various world model methods.
 
 Lastly, plugins execute events, which is to say they make sure that an event accurately represents the world. Present with an event of copying, for instance, a filesystem plugin would perform an actual copy using an FS lib.
 
@@ -40,6 +40,30 @@ Analyze the world and inform the processor of what's known. This method should b
     - (BOOL)executeEvent:(LEEvent*)event eventSet:(LEEventSet*)evs;
 
 Perform necessary actions to make an event real. Because individual sentences might have multiple events, any time one of them is sent to be executed, the whole event set it's part of is also sent, in case the other events are relevant to the execution of the specific event.
+
+World Models
+------------
+
+    - (void)setShouldRefreshWorldModel;
+
+Called by when a plugin performs actions that change the world in ways not manifestly present in the sentences being processed. For example, moving to a new directory reveals new, previously unknown files, and would require a refresh of the world model.
+
+    - (LEEventSet*)worldModelDescription;
+
+Used for querying what the processor knows about the world. The world model description is updated to include new knowledge from the input sentences prior to any events being dispatched. Therefore, by the time plugins receive dispatches, the world model represents the way the world "ought to look" as a result of dispatching.
+
+    - (LEEntity*)newEntity;
+
+Create a new entity by updating the world model. This should always be used to create new entities.
+
+    - (BOOL)assertEventPredicate:(NSString*)prd arguments:(NSDictionary*)args sender:(LEPlugin*)plg;
+
+Inform the processor that some new event exists, of the sort classified by `prd`, relating the specified arguments. For example, when analyzing the world, a filesystem plugin might want to inform the processor of a file that exists. This could be done like so, assuming the entity `x` has already been created:
+
+    [processor assertEventPredicate: @"File"
+                          arguments: @{ @"Exp": [x] }];
+
+This method automatically creates a new event object in the world model.
 
 Dispatching Events
 ------------------
